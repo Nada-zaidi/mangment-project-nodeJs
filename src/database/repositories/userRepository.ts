@@ -158,7 +158,7 @@ export default class UserRepository {
       options,
     );
 
-    const { id } = await this.findByEmailWithoutAvatar(
+    const { id } = await this.findByEmail(
       email,
       options,
     );

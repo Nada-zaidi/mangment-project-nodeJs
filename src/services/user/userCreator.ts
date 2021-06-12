@@ -1,5 +1,4 @@
 import assert from 'assert';
-import EmailSender from '../../services/emailSender';
 import UserRepository from '../../database/repositories/userRepository';
 import MongooseRepository from '../../database/repositories/mongooseRepository';
 import TenantUserRepository from '../../database/repositories/tenantUserRepository';
