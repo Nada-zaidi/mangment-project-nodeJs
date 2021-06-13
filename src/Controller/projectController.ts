@@ -1,19 +1,19 @@
-import MongooseRepository from './mongooseController';
+import MongooseController from './mongooseController';
 import MongooseQueryUtils from '../database/utils/mongooseQueryUtils';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 import lodash from 'lodash';
 import Project from '../database/models/project';
-import UserRepository from './userController';
+import UserController from './userController';
 import Task from '../database/models/task';
 
-class ProjectRepository {
+class ProjectController {
   
-  static async create(data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async create(data, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -31,7 +31,7 @@ class ProjectRepository {
       options,
     );
 
-    await MongooseRepository.refreshTwoWayRelationManyToOne(
+    await MongooseController.refreshTwoWayRelationManyToOne(
       record,
       Project(options.database),
       'task',
@@ -43,12 +43,12 @@ class ProjectRepository {
     return this.findById(record.id, options);
   }
 
-  static async update(id, data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async update(id, data, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       Project(options.database).findOne({_id: id, tenant: currentTenant.id}),
       options,
     );
@@ -61,7 +61,7 @@ class ProjectRepository {
       { _id: id },
       {
         ...data,
-        updatedBy: MongooseRepository.getCurrentUser(
+        updatedBy: MongooseController.getCurrentUser(
           options,
         ).id,
       },
@@ -70,7 +70,7 @@ class ProjectRepository {
 
     record = await this.findById(id, options);
 
-    await MongooseRepository.refreshTwoWayRelationManyToOne(
+    await MongooseController.refreshTwoWayRelationManyToOne(
       record,
       Project(options.database),
       'task',
@@ -82,12 +82,12 @@ class ProjectRepository {
     return record;
   }
 
-  static async destroy(id, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async destroy(id, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       Project(options.database).findOne({_id: id, tenant: currentTenant.id}),
       options,
     );
@@ -99,7 +99,7 @@ class ProjectRepository {
     await Project(options.database).deleteOne({ _id: id }, options);
 
 
-    await MongooseRepository.destroyRelationToOne(
+    await MongooseController.destroyRelationToOne(
       id,
       Task(options.database),
       'project',
@@ -109,7 +109,7 @@ class ProjectRepository {
 
   static async filterIdInTenant(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     return lodash.get(
       await this.filterIdsInTenant([id], options),
@@ -120,14 +120,14 @@ class ProjectRepository {
 
   static async filterIdsInTenant(
     ids,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     if (!ids || !ids.length) {
       return [];
     }
 
     const currentTenant =
-      MongooseRepository.getCurrentTenant(options);
+      MongooseController.getCurrentTenant(options);
 
     const records = await Project(options.database)
       .find({
@@ -139,12 +139,12 @@ class ProjectRepository {
     return records.map((record) => record._id);
   }
 
-  static async count(filter, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async count(filter, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    return MongooseRepository.wrapWithSessionIfExists(
+    return MongooseController.wrapWithSessionIfExists(
       Project(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
@@ -153,12 +153,12 @@ class ProjectRepository {
     );
   }
 
-  static async findById(id, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async findById(id, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       Project(options.database)
         .findOne({_id: id, tenant: currentTenant.id})
       .populate('admins')
@@ -177,9 +177,9 @@ class ProjectRepository {
 
   static async findAndCountAll(
     { filter, limit = 0, offset = 0, orderBy = '' },
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -302,8 +302,8 @@ class ProjectRepository {
     return { rows, count };
   }
 
-  static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async findAllAutocomplete(search, limit, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -350,12 +350,12 @@ class ProjectRepository {
 
 
 
-    output.admins = UserRepository.cleanupForRelationships(output.admins);
+    output.admins = UserController.cleanupForRelationships(output.admins);
 
-    output.usersList = UserRepository.cleanupForRelationships(output.usersList);
+    output.usersList = UserController.cleanupForRelationships(output.usersList);
 
     return output;
   }
 }
 
-export default ProjectRepository;
+export default ProjectController;

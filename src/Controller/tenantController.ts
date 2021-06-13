@@ -1,4 +1,4 @@
-import MongooseRepository from './mongooseController';
+import MongooseController from './mongooseController';
 import MongooseQueryUtils from '../database/utils/mongooseQueryUtils';
 import User from '../database/models/user';
 import Tenant from '../database/models/tenant';
@@ -6,13 +6,13 @@ import Project from '../database/models/project';
 import Task from '../database/models/task';
 //import { v4 as uuid } from 'uuid';
 import { isUserInTenant } from '../database/utils/userTenantUtils';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 
 const forbiddenTenantUrls = ['www'];
 
-class TenantRepository {
-  static async create(data, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(
+class TenantController {
+  static async create(data, options: IControllerOptions) {
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -49,9 +49,9 @@ class TenantRepository {
   static async update(
     id,
     data,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -92,7 +92,7 @@ class TenantRepository {
       { _id: id },
       {
         ...data,
-        updatedBy: MongooseRepository.getCurrentUser(
+        updatedBy: MongooseController.getCurrentUser(
           options,
         ).id,
       },
@@ -109,9 +109,9 @@ class TenantRepository {
     id,
     planStripeCustomerId,
     planUserId,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -134,7 +134,7 @@ class TenantRepository {
     planStripeCustomerId,
     plan,
     planStatus,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     const data = {
       plan,
@@ -142,7 +142,7 @@ class TenantRepository {
       updatedBy: null,
     };
 
-    const record = await MongooseRepository.wrapWithSessionIfExists(
+    const record = await MongooseController.wrapWithSessionIfExists(
       Tenant(options.database).findOne({
         planStripeCustomerId,
       }),
@@ -158,8 +158,8 @@ class TenantRepository {
     return await this.findById(record.id, options);
   }
 
-  static async destroy(id, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(
+  static async destroy(id, options: IControllerOptions) {
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -167,7 +167,7 @@ class TenantRepository {
       throw new Error("user is not find in this tenant");
     }
 
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       Tenant(options.database).findById(id),
       options,
     );
@@ -192,15 +192,15 @@ class TenantRepository {
     );
   }
 
-  static async count(filter, options: IRepositoryOptions) {
-    return MongooseRepository.wrapWithSessionIfExists(
+  static async count(filter, options: IControllerOptions) {
+    return MongooseController.wrapWithSessionIfExists(
       Tenant(options.database).countDocuments(filter),
       options,
     );
   }
 
-  static async findById(id, options: IRepositoryOptions) {
-    const record = await MongooseRepository.wrapWithSessionIfExists(
+  static async findById(id, options: IControllerOptions) {
+    const record = await MongooseController.wrapWithSessionIfExists(
       Tenant(options.database).findById(id),
       options,
     );
@@ -216,8 +216,8 @@ class TenantRepository {
     return output;
   }
 
-  static async findByUrl(url, options: IRepositoryOptions) {
-    const record = await MongooseRepository.wrapWithSessionIfExists(
+  static async findByUrl(url, options: IControllerOptions) {
+    const record = await MongooseController.wrapWithSessionIfExists(
       Tenant(options.database).findOne({ url }),
       options,
     );
@@ -233,15 +233,15 @@ class TenantRepository {
     return output;
   }
 
-  static async findDefault(options: IRepositoryOptions) {
+  static async findDefault(options: IControllerOptions) {
     return Tenant(options.database).findOne();
   }
 
   static async findAndCountAll(
     { filter, limit = 0, offset = 0, orderBy = '' },
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -332,9 +332,9 @@ class TenantRepository {
   static async findAllAutocomplete(
     search,
     limit,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -396,4 +396,4 @@ class TenantRepository {
   }
 }
 
-export default TenantRepository;
+export default TenantController;

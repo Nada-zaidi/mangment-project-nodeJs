@@ -1,6 +1,6 @@
 import PermissionChecker from '../../services/user/permissionChecker';
 import ApiResponseHandler from '../apiResponseHandler';
-import UserRepository from '../../Controller/userController';
+import UserController from '../../Controller/userController';
 import Permissions from '../../security/permissions';
 
 export default async (req, res) => {
@@ -9,7 +9,7 @@ export default async (req, res) => {
       Permissions.values.userRead,
     );
 
-    const payload = await UserRepository.findById(
+    const payload = await UserController.findById(
       req.params.id,
       req,
     );

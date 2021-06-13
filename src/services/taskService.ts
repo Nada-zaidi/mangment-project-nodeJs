@@ -1,8 +1,8 @@
-import MongooseRepository from '../Controller/mongooseController';
+import MongooseController from '../Controller/mongooseController';
 import { IServiceOptions } from './IServiceOptions';
-import TaskRepository from '../Controller/taskController';
-import ProjectRepository from '../Controller/projectController';
-import UserRepository from '../Controller/userController';
+import TaskController from '../Controller/taskController';
+import ProjectController from '../Controller/projectController';
+import UserController from '../Controller/userController';
 
 export default class TaskService {
   options: IServiceOptions;
@@ -12,26 +12,26 @@ export default class TaskService {
   }
 
   async create(data) {
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       this.options.database,
     );
 
     try {
-      data.assignedTo = await UserRepository.filterIdInTenant(data.assignedTo, { ...this.options, session });
-      data.project = await ProjectRepository.filterIdInTenant(data.project, { ...this.options, session });
+      data.assignedTo = await UserController.filterIdInTenant(data.assignedTo, { ...this.options, session });
+      data.project = await ProjectController.filterIdInTenant(data.project, { ...this.options, session });
 
-      const record = await TaskRepository.create(data, {
+      const record = await TaskController.create(data, {
         ...this.options,
         session,
       });
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
 
       return record;
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
 
-      MongooseRepository.handleUniqueFieldError(
+      MongooseController.handleUniqueFieldError(
         error,
         'task',
       );
@@ -42,11 +42,11 @@ export default class TaskService {
 
 
   async findById(id) {
-    return TaskRepository.findById(id, this.options);
+    return TaskController.findById(id, this.options);
   }
 
   async findAllAutocomplete(search, limit) {
-    return TaskRepository.findAllAutocomplete(
+    return TaskController.findAllAutocomplete(
       search,
       limit,
       this.options,
@@ -55,7 +55,7 @@ export default class TaskService {
 
 
   /*async _isImportHashExistent(importHash) {
-    const count = await TaskRepository.count(
+    const count = await TaskController.count(
       {
         importHash,
       },

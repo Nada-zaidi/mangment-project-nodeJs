@@ -1,18 +1,18 @@
 import { getConfig } from '../config';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 import mongoose from 'mongoose';
-export default class MongooseRepository {
+export default class MongooseController {
   /**
    * Returns the currentUser if it exists on the options.
    */
-  static getCurrentUser(options: IRepositoryOptions) {
+  static getCurrentUser(options: IControllerOptions) {
     return (options && options.currentUser) || { id: null };
   }
 
   /**
    * Returns the tenant if it exists on the options.
    */
-  static getCurrentTenant(options: IRepositoryOptions) {
+  static getCurrentTenant(options: IControllerOptions) {
     return (
       (options && options.currentTenant) || { id: null }
     );
@@ -21,7 +21,7 @@ export default class MongooseRepository {
   /**
    * Returns the session if it exists on the options.
    */
-  static getSession(options: IRepositoryOptions) {
+  static getSession(options: IControllerOptions) {
     return (options && options.session) || undefined;
   }
 
@@ -69,7 +69,7 @@ export default class MongooseRepository {
    */
   static async wrapWithSessionIfExists(
     toWrap,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     if (!this.getSession(options)) {
       return toWrap;
@@ -89,7 +89,7 @@ export default class MongooseRepository {
     sourceProperty,
     targetModel,
     targetProperty,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     await sourceModel.updateMany(
       {
@@ -132,7 +132,7 @@ export default class MongooseRepository {
     sourceProperty,
     targetModel,
     targetProperty,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     await targetModel.updateOne(
       { _id: record[sourceProperty] },
@@ -160,7 +160,7 @@ export default class MongooseRepository {
     sourceProperty,
     targetModel,
     targetProperty,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     await targetModel.updateMany(
       { _id: { $in: record[sourceProperty] } },
@@ -187,7 +187,7 @@ export default class MongooseRepository {
     recordId,
     targetModel,
     targetProperty,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     await targetModel.updateMany(
       { [targetProperty]: recordId },
@@ -205,7 +205,7 @@ export default class MongooseRepository {
     recordId,
     targetModel,
     targetProperty,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     await targetModel.updateMany(
       { [targetProperty]: recordId },

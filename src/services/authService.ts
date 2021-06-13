@@ -1,11 +1,11 @@
-import UserRepository from '../Controller/userController';
+import UserController from '../Controller/userController';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import TenantUserRepository from '../Controller/tenantUserController';
-import MongooseRepository from '../Controller/mongooseController';
+import TenantUserController from '../Controller/tenantUserController';
+import MongooseController from '../Controller/mongooseController';
 import { getConfig } from '../config';
 import TenantService from './tenantService';
-import TenantRepository from '../Controller/tenantController';
+import TenantController from '../Controller/tenantController';
 import moment from 'moment';
 
 const BCRYPT_SALT_ROUNDS = 12;
@@ -20,14 +20,14 @@ class AuthService {
     options: any = {},
   ) {
     
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       options.database,
       );
       
     try {
       email = email.toLowerCase();
       
-      const existingUser = await UserRepository.findByEmail(
+      const existingUser = await UserController.findByEmail(
         email,
         options,
       );
@@ -42,7 +42,7 @@ class AuthService {
       if (existingUser) {
         // If the user already have an password,
         // it means that it has already signed up
-        const existingPassword = await UserRepository.findPassword(
+        const existingPassword = await UserController.findPassword(
           existingUser.id,
           options,
         );
@@ -55,7 +55,7 @@ class AuthService {
          * In the case of the user exists on the database (was invited)
          * it only creates the new password
          */
-        await UserRepository.updatePassword(
+        await UserController.updatePassword(
           existingUser.id,
           hashedPassword,
           false,
@@ -81,7 +81,7 @@ class AuthService {
 
         // Email may have been alreadyverified using the invitation token
        /* const isEmailVerified = Boolean(
-          await UserRepository.count(
+          await UserController.count(
             {
               emailVerified: true,
               _id: existingUser.id,
@@ -112,12 +112,12 @@ class AuthService {
           { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN },
         );
 
-        await MongooseRepository.commitTransaction(session);
+        await MongooseController.commitTransaction(session);
 
         return token;
       }
 
-      const newUser = await UserRepository.createFromAuth(
+      const newUser = await UserController.createFromAuth(
         {
           firstName: email.split('@')[0],
           password: hashedPassword,
@@ -144,7 +144,7 @@ class AuthService {
 
       // Email may have been alreadyverified using the invitation token
       const isEmailVerified = Boolean(
-        await UserRepository.count(
+        await UserController.count(
           {
             emailVerified: true,
             _id: newUser.id,
@@ -161,11 +161,11 @@ class AuthService {
         { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN },
       );
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
 
       return token;
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
 
       throw error;
     }
@@ -173,7 +173,7 @@ class AuthService {
 
   static async findByEmail(email, options: any = {}) {
     email = email.toLowerCase();
-    return UserRepository.findByEmail(email, options);
+    return UserController.findByEmail(email, options);
   }
 
   static async signin(
@@ -183,13 +183,13 @@ class AuthService {
     tenantId,
     options: any = {},
   ) {
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       options.database,
     );
 
     try {
       email = email.toLowerCase();
-      const user = await UserRepository.findByEmail(
+      const user = await UserController.findByEmail(
         email,
         options,
       );
@@ -198,7 +198,7 @@ class AuthService {
         throw new Error("user not found");
       }
 
-      const currentPassword = await UserRepository.findPassword(
+      const currentPassword = await UserController.findPassword(
         user.id,
         options,
       );
@@ -236,11 +236,11 @@ class AuthService {
         { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN },
       );
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
 
       return token;
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
 
       throw error;
     }
@@ -254,7 +254,7 @@ class AuthService {
   ) {
     if (invitationToken) {
       try {
-        await TenantUserRepository.acceptInvitation(
+        await TenantUserController.acceptInvitation(
           invitationToken,
           {
             ...options,
@@ -309,7 +309,7 @@ class AuthService {
           const id = decoded.id;
           const jwtTokenIat = decoded.iat;
 
-          UserRepository.findById(id, {
+          UserController.findById(id, {
             ...options,
             bypassPermissionValidation: true,
           })

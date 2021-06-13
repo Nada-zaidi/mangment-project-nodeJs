@@ -1,17 +1,17 @@
-import MongooseRepository from './mongooseController';
+import MongooseController from './mongooseController';
 import User from '../database/models/user';
 import Roles from '../security/roles';
 import crypto from 'crypto';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 
 
-export default class TenantUserRepository {
+export default class TenantUserController {
   
   static async findByInvitationToken(
     invitationToken,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    let user = await MongooseRepository.wrapWithSessionIfExists(
+    let user = await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findOne({
           tenants: { $elemMatch: { invitationToken } },
@@ -40,7 +40,7 @@ export default class TenantUserRepository {
     tenant,
     user,
     roles,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     roles = roles || [];
     const status = selectStatus('active', roles);
@@ -63,9 +63,9 @@ export default class TenantUserRepository {
   static async destroy(
     tenantId,
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const user = await MongooseRepository.wrapWithSessionIfExists(
+    const user = await MongooseController.wrapWithSessionIfExists(
       User(options.database).findById(id),
       options,
     );
@@ -82,7 +82,7 @@ export default class TenantUserRepository {
   }
   
   static async updateRoles(tenantId, id, roles, options) {
-    const user = await MongooseRepository.wrapWithSessionIfExists(
+    const user = await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findById(id)
         .populate('tenants.tenant'),
@@ -153,9 +153,9 @@ export default class TenantUserRepository {
 
   static async acceptInvitation(
     invitationToken,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 

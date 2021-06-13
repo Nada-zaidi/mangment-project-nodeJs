@@ -1,4 +1,4 @@
-export interface IRepositoryOptions {
+export interface IControllerOptions {
   database: any;
   currentUser?: any;
   currentTenant?: any;

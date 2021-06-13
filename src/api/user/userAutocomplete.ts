@@ -1,7 +1,7 @@
 import PermissionChecker from '../../services/user/permissionChecker';
 import ApiResponseHandler from '../apiResponseHandler';
 import Permissions from '../../security/permissions';
-import UserRepository from '../../Controller/userController';
+import UserController from '../../Controller/userController';
 
 export default async (req, res) => {
   try {
@@ -9,7 +9,7 @@ export default async (req, res) => {
       Permissions.values.userAutocomplete,
     );
 
-    const payload = await UserRepository.findAllAutocomplete(
+    const payload = await UserController.findAllAutocomplete(
       req.query.query,
       req.query.limit,
       req,

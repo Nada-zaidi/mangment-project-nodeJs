@@ -1,19 +1,19 @@
-import MongooseRepository from './mongooseController';
+import MongooseController from './mongooseController';
 import MongooseQueryUtils from '../database/utils/mongooseQueryUtils';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 import lodash from 'lodash';
 import Task from '../database/models/task';
-import UserRepository from './userController';
+import UserController from './userController';
 import Project from '../database/models/project';
 
-class TaskRepository {
+class TaskController {
   
-  static async create(data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async create(data, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -31,7 +31,7 @@ class TaskRepository {
       options,
     );
 
-    await MongooseRepository.refreshTwoWayRelationOneToMany(
+    await MongooseController.refreshTwoWayRelationOneToMany(
       record,
       'project',
       Project(options.database),
@@ -44,7 +44,7 @@ class TaskRepository {
 
   static async filterIdInTenant(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     return lodash.get(
       await this.filterIdsInTenant([id], options),
@@ -55,14 +55,14 @@ class TaskRepository {
 
   static async filterIdsInTenant(
     ids,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     if (!ids || !ids.length) {
       return [];
     }
 
     const currentTenant =
-      MongooseRepository.getCurrentTenant(options);
+      MongooseController.getCurrentTenant(options);
 
     const records = await Task(options.database)
       .find({
@@ -74,26 +74,12 @@ class TaskRepository {
     return records.map((record) => record._id);
   }
 
-/*   static async count(filter, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async findById(id, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
-    return MongooseRepository.wrapWithSessionIfExists(
-      Task(options.database).countDocuments({
-        ...filter,
-        tenant: currentTenant.id,
-      }),
-      options,
-    );
-  }
- */
-  static async findById(id, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
-      options,
-    );
-
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       Task(options.database)
         .findOne({_id: id, tenant: currentTenant.id})
       .populate('assignedTo')
@@ -108,8 +94,8 @@ class TaskRepository {
     return this._mapRelationshipsAndFillDownloadUrl(record);
   }
 
-  static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+  static async findAllAutocomplete(search, limit, options: IControllerOptions) {
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -154,10 +140,10 @@ class TaskRepository {
 
 
 
-    output.assignedTo = UserRepository.cleanupForRelationships(output.assignedTo);
+    output.assignedTo = UserController.cleanupForRelationships(output.assignedTo);
 
     return output;
   }
 }
 
-export default TaskRepository;
+export default TaskController;

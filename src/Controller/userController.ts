@@ -1,13 +1,13 @@
-import MongooseRepository from './mongooseController';
+import MongooseController from './mongooseController';
 import User from '../database/models/user';
 import MongooseQueryUtils from '../database/utils/mongooseQueryUtils';
 import crypto from 'crypto';
 import { isUserInTenant } from '../database/utils/userTenantUtils';
-import { IRepositoryOptions } from './IControllerOptions';
+import { IControllerOptions } from './IControllerOptions';
 import lodash from 'lodash';
-export default class UserRepository {
-  static async create(data, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(
+export default class UserController {
+  static async create(data, options: IControllerOptions) {
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -36,7 +36,7 @@ export default class UserRepository {
 
   static async createFromAuth(
     data,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     data = this._preSave(data);
 
@@ -64,9 +64,9 @@ export default class UserRepository {
     id,
     password,
     invalidateOldTokens: boolean,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -90,9 +90,9 @@ export default class UserRepository {
 
   static async generateEmailVerificationToken(
     email,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -122,9 +122,9 @@ export default class UserRepository {
 
   static async generatePasswordResetToken(
     email,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -156,9 +156,9 @@ export default class UserRepository {
   static async update(
     id,
     data,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -181,9 +181,9 @@ export default class UserRepository {
 
   static async findByEmail(
     email,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    return MongooseRepository.wrapWithSessionIfExists(
+    return MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findOne({
           email: {
@@ -200,9 +200,9 @@ export default class UserRepository {
 
   static async findAndCountAll(
     { filter, limit = 0, offset = 0, orderBy = '' },
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -294,7 +294,7 @@ export default class UserRepository {
       ? { $and: criteriaAnd }
       : null;
 
-    let rows = await MongooseRepository.wrapWithSessionIfExists(
+    let rows = await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .find(criteria)
         .skip(skip)
@@ -304,7 +304,7 @@ export default class UserRepository {
       options,
     );
 
-    const count = await MongooseRepository.wrapWithSessionIfExists(
+    const count = await MongooseController.wrapWithSessionIfExists(
       User(options.database).countDocuments(criteria),
       options,
     );
@@ -328,9 +328,9 @@ export default class UserRepository {
   static async findAllAutocomplete(
     search,
     limit,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentTenant = MongooseRepository.getCurrentTenant(
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -399,7 +399,7 @@ export default class UserRepository {
 
   static async filterIdInTenant(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     return lodash.get(
       await this.filterIdsInTenant([id], options),
@@ -410,14 +410,14 @@ export default class UserRepository {
 
   static async filterIdsInTenant(
     ids,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
     if (!ids || !ids.length) {
       return ids;
     }
 
     const currentTenant =
-      MongooseRepository.getCurrentTenant(options);
+      MongooseController.getCurrentTenant(options);
 
     let users = await User(options.database)
       .find({
@@ -435,9 +435,9 @@ export default class UserRepository {
 
   static async findByIdWithPassword(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    return await MongooseRepository.wrapWithSessionIfExists(
+    return await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findById(id)
         .populate('tenants.tenant'),
@@ -445,8 +445,8 @@ export default class UserRepository {
     );
   }
 
-  static async findById(id, options: IRepositoryOptions) {
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+  static async findById(id, options: IControllerOptions) {
+    let record = await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findById(id)
         .populate('tenants.tenant'),
@@ -457,7 +457,7 @@ export default class UserRepository {
       throw new Error("record not found");
     }
 
-    const currentTenant = MongooseRepository.getCurrentTenant(
+    const currentTenant = MongooseController.getCurrentTenant(
       options,
     );
 
@@ -482,9 +482,9 @@ export default class UserRepository {
 
   static async findPassword(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    let record = await MongooseRepository.wrapWithSessionIfExists(
+    let record = await MongooseController.wrapWithSessionIfExists(
       User(options.database)
         .findById(id)
         .select('+password'),
@@ -503,9 +503,9 @@ export default class UserRepository {
    */
   static async findByPasswordResetToken(
     token,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    return MongooseRepository.wrapWithSessionIfExists(
+    return MongooseController.wrapWithSessionIfExists(
       User(options.database).findOne({
         passwordResetToken: token,
         passwordResetTokenExpiresAt: { $gt: Date.now() },
@@ -519,9 +519,9 @@ export default class UserRepository {
    */
   static async findByEmailVerificationToken(
     token,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    return MongooseRepository.wrapWithSessionIfExists(
+    return MongooseController.wrapWithSessionIfExists(
       User(options.database).findOne({
         emailVerificationToken: token,
         emailVerificationTokenExpiresAt: {
@@ -534,9 +534,9 @@ export default class UserRepository {
 
   static async markEmailVerified(
     id,
-    options: IRepositoryOptions,
+    options: IControllerOptions,
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
+    const currentUser = MongooseController.getCurrentUser(
       options,
     );
 
@@ -553,8 +553,8 @@ export default class UserRepository {
     return true;
   }
 
-  static async count(filter, options: IRepositoryOptions) {
-    return MongooseRepository.wrapWithSessionIfExists(
+  static async count(filter, options: IControllerOptions) {
+    return MongooseController.wrapWithSessionIfExists(
       User(options.database).countDocuments(filter),
       options,
     );

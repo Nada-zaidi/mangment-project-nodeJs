@@ -1,8 +1,8 @@
-import MongooseRepository from '../Controller/mongooseController';
+import MongooseController from '../Controller/mongooseController';
 import { IServiceOptions } from './IServiceOptions';
-import ProjectRepository from '../Controller/projectController';
-import TaskRepository from '../Controller/taskController';
-import UserRepository from '../Controller/userController';
+import ProjectController from '../Controller/projectController';
+import TaskController from '../Controller/taskController';
+import UserController from '../Controller/userController';
 
 export default class ProjectService {
   options: IServiceOptions;
@@ -12,28 +12,28 @@ export default class ProjectService {
   }
 
   async create(data) {
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       this.options.database,
     );
 
     try {
-      data.admins = await UserRepository.filterIdInTenant(data.admins, { ...this.options, session });
-      data.usersList = await UserRepository.filterIdsInTenant(data.usersList, { ...this.options, session });
-      data.statut = await TaskRepository.filterIdInTenant(data.statut, { ...this.options, session });
-      data.task = await TaskRepository.filterIdsInTenant(data.task, { ...this.options, session });
+      data.admins = await UserController.filterIdInTenant(data.admins, { ...this.options, session });
+      data.usersList = await UserController.filterIdsInTenant(data.usersList, { ...this.options, session });
+      data.statut = await TaskController.filterIdInTenant(data.statut, { ...this.options, session });
+      data.task = await TaskController.filterIdsInTenant(data.task, { ...this.options, session });
 
-      const record = await ProjectRepository.create(data, {
+      const record = await ProjectController.create(data, {
         ...this.options,
         session,
       });
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
 
       return record;
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
 
-      MongooseRepository.handleUniqueFieldError(
+      MongooseController.handleUniqueFieldError(
         error,
         'project',
       );
@@ -43,17 +43,17 @@ export default class ProjectService {
   }
 
   async update(id, data) {
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       this.options.database,
     );
 
     try {
-      data.admins = await UserRepository.filterIdInTenant(data.admins, { ...this.options, session });
-      data.usersList = await UserRepository.filterIdInTenant(data.usersList, { ...this.options, session });
-      data.statut = await TaskRepository.filterIdInTenant(data.statut, { ...this.options, session });
-      data.task = await TaskRepository.filterIdsInTenant(data.task, { ...this.options, session });
+      data.admins = await UserController.filterIdInTenant(data.admins, { ...this.options, session });
+      data.usersList = await UserController.filterIdInTenant(data.usersList, { ...this.options, session });
+      data.statut = await TaskController.filterIdInTenant(data.statut, { ...this.options, session });
+      data.task = await TaskController.filterIdsInTenant(data.task, { ...this.options, session });
 
-      const record = await ProjectRepository.update(
+      const record = await ProjectController.update(
         id,
         data,
         {
@@ -62,13 +62,13 @@ export default class ProjectService {
         },
       );
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
 
       return record;
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
 
-      MongooseRepository.handleUniqueFieldError(
+      MongooseController.handleUniqueFieldError(
         error,
         'project',
       );
@@ -78,31 +78,31 @@ export default class ProjectService {
   }
 
   async destroyAll(ids) {
-    const session = await MongooseRepository.createSession(
+    const session = await MongooseController.createSession(
       this.options.database,
     );
 
     try {
       for (const id of ids) {
-        await ProjectRepository.destroy(id, {
+        await ProjectController.destroy(id, {
           ...this.options,
           session,
         });
       }
 
-      await MongooseRepository.commitTransaction(session);
+      await MongooseController.commitTransaction(session);
     } catch (error) {
-      await MongooseRepository.abortTransaction(session);
+      await MongooseController.abortTransaction(session);
       throw error;
     }
   }
 
   async findById(id) {
-    return ProjectRepository.findById(id, this.options);
+    return ProjectController.findById(id, this.options);
   }
 
   async findAllAutocomplete(search, limit) {
-    return ProjectRepository.findAllAutocomplete(
+    return ProjectController.findAllAutocomplete(
       search,
       limit,
       this.options,
@@ -110,7 +110,7 @@ export default class ProjectService {
   }
 
   async findAndCountAll(args) {
-    return ProjectRepository.findAndCountAll(
+    return ProjectController.findAndCountAll(
       args,
       this.options,
     );
@@ -135,7 +135,7 @@ export default class ProjectService {
   }
 
   async _isImportHashExistent(importHash) {
-    const count = await ProjectRepository.count(
+    const count = await ProjectController.count(
       {
         importHash,
       },

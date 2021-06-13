@@ -1,11 +1,11 @@
-import TenantRepository from '../Controller/tenantController';
-import TenantUserRepository from '../Controller/tenantUserController';
-import MongooseRepository from '../Controller/mongooseController';
+import TenantController from '../Controller/tenantController';
+import TenantUserController from '../Controller/tenantUserController';
+import MongooseController from '../Controller/mongooseController';
 import PermissionChecker from './user/permissionChecker';
 import Permissions from '../security/permissions';
 import { getConfig } from '../config';
 import Roles from '../security/roles';
-import UserRepository from '../Controller/userController';
+import UserController from '../Controller/userController';
 import { IServiceOptions } from './IServiceOptions';
 
 export default class TenantService {
@@ -22,7 +22,7 @@ export default class TenantService {
    * to new users.
    */
   async createOrJoinDefault({ roles }, session) {
-    const tenant = await TenantRepository.findDefault({
+    const tenant = await TenantController.findDefault({
       ...this.options,
       session,
     });
@@ -30,7 +30,7 @@ export default class TenantService {
     if (tenant) {
       // Reload the current user in case it has chenged
       // in the middle of this session
-      const currentUserReloaded = await UserRepository.findById(
+      const currentUserReloaded = await UserController.findById(
         this.options.currentUser.id,
         {
           ...this.options,
@@ -51,7 +51,7 @@ export default class TenantService {
         return;
       }
 
-      return await TenantUserRepository.create(
+      return await TenantUserController.create(
         tenant,
         this.options.currentUser,
         roles,
@@ -59,7 +59,7 @@ export default class TenantService {
       );
     }
 
-    let record = await TenantRepository.create(
+    let record = await TenantController.create(
       { name: 'default', url: 'default' },
       {
         ...this.options,
@@ -68,7 +68,7 @@ export default class TenantService {
     );
 
 
-    await TenantUserRepository.create(
+    await TenantUserController.create(
       record,
       this.options.currentUser,
       [Roles.values.admin],
@@ -83,7 +83,7 @@ export default class TenantService {
     { roles, tenantId },
     { session },
   ) {
-    const tenant = await TenantRepository.findById(
+    const tenant = await TenantController.findById(
       tenantId,
       {
         ...this.options,
@@ -97,7 +97,7 @@ export default class TenantService {
 
     // Reload the current user in case it has chenged
     // in the middle of this session
-    const currentUserReloaded = await UserRepository.findById(
+    const currentUserReloaded = await UserController.findById(
       this.options.currentUser.id,
       {
         ...this.options,
@@ -116,7 +116,7 @@ export default class TenantService {
       // If found the invited tenant user via email
       // accepts the invitation
       if (tenantUser.status === 'invited') {
-        return await TenantUserRepository.acceptInvitation(
+        return await TenantUserController.acceptInvitation(
           tenantUser.invitationToken,
           {
             ...this.options,
@@ -130,7 +130,7 @@ export default class TenantService {
       return;
     }
 
-    return await TenantUserRepository.create(
+    return await TenantUserController.create(
       tenant,
       this.options.currentUser,
       roles,
@@ -141,7 +141,7 @@ export default class TenantService {
   // In case this user has been invited
   // but havent used the invitation token
   async joinDefaultUsingInvitedEmail(session) {
-    const tenant = await TenantRepository.findDefault({
+    const tenant = await TenantController.findDefault({
       ...this.options,
       session,
     });
@@ -152,7 +152,7 @@ export default class TenantService {
 
     // Reload the current user in case it has chenged
     // in the middle of this session
-    const currentUserReloaded = await UserRepository.findById(
+    const currentUserReloaded = await UserController.findById(
       this.options.currentUser.id,
       {
         ...this.options,
@@ -171,7 +171,7 @@ export default class TenantService {
       return;
     }
 
-    return await TenantUserRepository.acceptInvitation(
+    return await TenantUserController.acceptInvitation(
       tenantUser.invitationToken,
       {
         ...this.options,
@@ -183,7 +183,7 @@ export default class TenantService {
   async findById(id, options?) {
     options = options || {};
 
-    return TenantRepository.findById(id, {
+    return TenantController.findById(id, {
       ...this.options,
       ...options,
     });
@@ -191,7 +191,7 @@ export default class TenantService {
     //options = options || {}; 
   
   async findAllAutocomplete(search, limit) {
-    return TenantRepository.findAllAutocomplete(
+    return TenantController.findAllAutocomplete(
       search,
       limit,
       this.options,
@@ -216,7 +216,7 @@ export default class TenantService {
   }*/
 
   async _isImportHashExistent(importHash) {
-    const count = await TenantRepository.count(
+    const count = await TenantController.count(
       {
         importHash,
       },

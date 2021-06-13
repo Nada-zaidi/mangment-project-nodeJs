@@ -1,7 +1,7 @@
 import assert from 'assert';
-import UserRepository from '../../Controller/userController';
-import MongooseRepository from '../../Controller/mongooseController';
-import TenantUserRepository from '../../Controller/tenantUserController';
+import UserController from '../../Controller/userController';
+import MongooseController from '../../Controller/mongooseController';
+import TenantUserController from '../../Controller/tenantUserController';
 import { IServiceOptions } from '../IServiceOptions';
 
 export default class UserCreator {
@@ -27,17 +27,17 @@ export default class UserCreator {
     await this._validate();
 
     try {
-      this.session = await MongooseRepository.createSession(
+      this.session = await MongooseController.createSession(
         this.options.database,
       );
 
       await this._addOrUpdateAll();
 
-      await MongooseRepository.commitTransaction(
+      await MongooseController.commitTransaction(
         this.session,
       );
     } catch (error) {
-      await MongooseRepository.abortTransaction(
+      await MongooseController.abortTransaction(
         this.session,
       );
       throw error;
@@ -84,7 +84,7 @@ export default class UserCreator {
    * If the user already exists, it only adds the role to the user.
    */
   async _addOrUpdate(email) {
-    let user = await UserRepository.findByEmail(
+    let user = await UserController.findByEmail(
       email,
       {
         ...this.options,
@@ -93,7 +93,7 @@ export default class UserCreator {
     );
 
     if (!user) {
-      user = await UserRepository.create(
+      user = await UserController.create(
         { email },
         {
           ...this.options,
@@ -108,7 +108,7 @@ export default class UserCreator {
         this.options.currentTenant.id,
     );
 
-    const tenantUser = await TenantUserRepository.updateRoles(
+    const tenantUser = await TenantUserController.updateRoles(
       this.options.currentTenant.id,
       user.id,
       this._roles,
