@@ -1,11 +1,11 @@
-import UserRepository from '../database/repositories/userRepository';
+import UserRepository from '../Controller/userController';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import TenantUserRepository from '../database/repositories/tenantUserRepository';
-import MongooseRepository from '../database/repositories/mongooseRepository';
+import TenantUserRepository from '../Controller/tenantUserController';
+import MongooseRepository from '../Controller/mongooseController';
 import { getConfig } from '../config';
 import TenantService from './tenantService';
-import TenantRepository from '../database/repositories/tenantRepository';
+import TenantRepository from '../Controller/tenantController';
 import moment from 'moment';
 
 const BCRYPT_SALT_ROUNDS = 12;

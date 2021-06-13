@@ -1,7 +1,7 @@
 import PermissionChecker from '../../services/user/permissionChecker';
 import ApiResponseHandler from '../apiResponseHandler';
 import Permissions from '../../security/permissions';
-import UserRepository from '../../database/repositories/userRepository';
+import UserRepository from '../../Controller/userController';
 
 export default async (req, res) => {
   try {

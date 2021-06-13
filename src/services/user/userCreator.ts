@@ -1,7 +1,7 @@
 import assert from 'assert';
-import UserRepository from '../../database/repositories/userRepository';
-import MongooseRepository from '../../database/repositories/mongooseRepository';
-import TenantUserRepository from '../../database/repositories/tenantUserRepository';
+import UserRepository from '../../Controller/userController';
+import MongooseRepository from '../../Controller/mongooseController';
+import TenantUserRepository from '../../Controller/tenantUserController';
 import { IServiceOptions } from '../IServiceOptions';
 
 export default class UserCreator {

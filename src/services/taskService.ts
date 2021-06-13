@@ -1,8 +1,8 @@
-import MongooseRepository from '../database/repositories/mongooseRepository';
+import MongooseRepository from '../Controller/mongooseController';
 import { IServiceOptions } from './IServiceOptions';
-import TaskRepository from '../database/repositories/taskRepository';
-import ProjectRepository from '../database/repositories/projectRepository';
-import UserRepository from '../database/repositories/userRepository';
+import TaskRepository from '../Controller/taskController';
+import ProjectRepository from '../Controller/projectController';
+import UserRepository from '../Controller/userController';
 
 export default class TaskService {
   options: IServiceOptions;

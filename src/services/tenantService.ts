@@ -1,11 +1,11 @@
-import TenantRepository from '../database/repositories/tenantRepository';
-import TenantUserRepository from '../database/repositories/tenantUserRepository';
-import MongooseRepository from '../database/repositories/mongooseRepository';
+import TenantRepository from '../Controller/tenantController';
+import TenantUserRepository from '../Controller/tenantUserController';
+import MongooseRepository from '../Controller/mongooseController';
 import PermissionChecker from './user/permissionChecker';
 import Permissions from '../security/permissions';
 import { getConfig } from '../config';
 import Roles from '../security/roles';
-import UserRepository from '../database/repositories/userRepository';
+import UserRepository from '../Controller/userController';
 import { IServiceOptions } from './IServiceOptions';
 
 export default class TenantService {

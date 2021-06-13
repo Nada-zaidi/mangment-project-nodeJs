@@ -10,7 +10,6 @@ export async function databaseInit() {
   if (mongoose.connection.readyState) {
     return mongoose;
   }
-
   /**
    * Connects to MongoDB
    */
