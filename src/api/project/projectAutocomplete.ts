@@ -5,10 +5,9 @@ import ProjectService from '../../services/projectService';
 
 export default async (req, res, next) => {
   try {
-    new PermissionChecker(req).validateHas(
+    const permission = new PermissionChecker(req).validateHas(
       Permissions.values.projectAutocomplete,
     );
-
     const payload = await new ProjectService(
       req,
     ).findAllAutocomplete(req.query.query, req.query.limit);

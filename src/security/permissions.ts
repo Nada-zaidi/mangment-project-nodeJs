@@ -4,16 +4,6 @@ const roles = Roles.values;
 class Permissions {
   static get values() {
     return {
-      tenantEdit: {
-        id: 'tenantEdit',
-        allowedRoles: [roles.admin],
-       
-      },
-      tenantDestroy: {
-        id: 'tenantDestroy',
-        allowedRoles: [roles.admin],
-       
-      },
       userEdit: {
         id: 'userEdit',
         allowedRoles: [roles.admin],
@@ -29,11 +19,6 @@ class Permissions {
         allowedRoles: [roles.admin],
        
       },
-      userImport: {
-        id: 'userImport',
-        allowedRoles: [roles.admin],
-       
-      },
       userRead: {
         id: 'userRead',
         allowedRoles: [roles.admin],
@@ -44,39 +29,19 @@ class Permissions {
         allowedRoles: [roles.admin, roles.custom],
        
       },
-      auditLogRead: {
-        id: 'auditLogRead',
-        allowedRoles: [roles.admin],
-       
-      },
-      settingsEdit: {
-        id: 'settingsEdit',
-        allowedRoles: [roles.admin],
-       
-        
-      },
-      projectImport: {
-        id: 'projectImport',
-        allowedRoles: [roles.admin],
-        
-      },
       projectCreate: {
         id: 'projectCreate',
         allowedRoles: [roles.admin],
-        
-        
       },
       projectEdit: {
         id: 'projectEdit',
         allowedRoles: [roles.admin],
         
-        
       },
       projectDestroy: {
         id: 'projectDestroy',
         allowedRoles: [roles.admin],
-        
-        
+      
       },
       projectRead: {
         id: 'projectRead',
@@ -86,12 +51,6 @@ class Permissions {
       projectAutocomplete: {
         id: 'projectAutocomplete',
         allowedRoles: [roles.admin, roles.custom],
-        
-      },
-
-      taskImport: {
-        id: 'taskImport',
-        allowedRoles: [roles.admin],
         
       },
       taskCreate: {

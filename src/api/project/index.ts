@@ -7,10 +7,6 @@ export default (app) => {
     `/tenant/:tenantId/project/:id`,
     require('./projectUpdate').default,
   );
-  app.post(
-    `/tenant/:tenantId/project/import`,
-    require('./projectImport').default,
-  );
   app.delete(
     `/tenant/:tenantId/project`,
     require('./projectDestroy').default,

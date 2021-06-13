@@ -5,7 +5,6 @@ export default (database) => {
   try {
     return database.model('tenant');
   } catch (error) {
-    console.log("this is error model doesnt exist" + " "+error)
   }
 
   const TenantSchema = new Schema(

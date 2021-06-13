@@ -5,7 +5,6 @@ export default (database) => {
   try {
     return database.model('project');
   } catch (error) {
-    // continue, because model doesnt exist
   }
 
   const ProjectSchema = new Schema(

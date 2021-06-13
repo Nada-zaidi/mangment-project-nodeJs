@@ -5,7 +5,6 @@ export default (database) => {
   try {
     return database.model('task');
   } catch (error) {
-    // continue, because model doesnt exist
   }
 
   const TaskSchema = new Schema(

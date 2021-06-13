@@ -21,6 +21,7 @@ export default class PermissionChecker {
     if (!this.has(permission)) {
       throw new Error("no permission");
     }
+    return this.has(permission)
   }
 
   /**
